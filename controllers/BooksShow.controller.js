@@ -5,41 +5,36 @@ angular.module('libraryApp')
   remove $http from the controller
   add BookService as a dependency
 *******************************************/
-BooksShowController.$inject=['$routeParams', '$location', '$http'];
-function BooksShowController($routeParams,    $location,   $http) {
+BooksShowController.$inject=['$routeParams', '$location', '$http', 'BookService'];
+function BooksShowController($routeParams,    $location,   $http, BookService) {
   var vm = this;
   var bookId = $routeParams.id;
   // exports
   vm.book = {};  // initially empty, getBook will fill
-  vm.getBook = getBook;
+  // vm.getBook = getBook;
   vm.updateBook = updateBook;
   vm.deleteBook = deleteBook;
 
   // initialization
-  getBook(bookId);
+  // getBook(bookId);
 
 
-  function getBook(id) {
     /*************************************
       REMOVE $http here -
       make use of the service instead
       BookService.get(id).then()
     **************************************/
 
-    $http({
-      method: 'GET',
-      url: 'https://super-crud.herokuapp.com/books/'+id
-    }).then(onBookShowSuccess, onError);
+    BookService.get(bookId).then(onBookShowSuccess, onError);
 
 
     function onBookShowSuccess(response){
-      console.log('here\'s the data for book', id, ':', response.data);
-      vm.book = response.data;
+      console.log('here\'s the data for book', bookId, ':', response.data);
+      vm.book = response;
     }
     function onError(error){
       console.log('there was an error: ', error);
     }
-  }
 
 
   /*****************************************
@@ -69,13 +64,11 @@ function BooksShowController($routeParams,    $location,   $http) {
       BookService.remove(id).then()
     **************************************/
 
-      $http({
-        method: 'DELETE',
-        url: 'https://super-crud.herokuapp.com/books/' + book._id,
-      }).then(onBookDeleteSuccess);
+      BookService.remove(book).then(onBookDeleteSuccess);
 
       function onBookDeleteSuccess(response){
-        console.log('book delete response data:', response.data);
+        console.log('the response is working:', response);
+        console.log('yup, should have relocated')
         $location.path('/');
       }
     }
